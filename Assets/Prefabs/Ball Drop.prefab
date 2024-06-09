@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 4434169603491543336}
   - component: {fileID: 4188233661043944493}
   - component: {fileID: 7281138560877204097}
-  - component: {fileID: 8063654438538230248}
   - component: {fileID: 1965140982490231996}
+  - component: {fileID: 6135045859042115984}
   m_Layer: 0
   m_Name: Ball Drop
   m_TagString: Untagged
@@ -120,19 +120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d87c39e0d8fcf0d478b75c995c0acab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8063654438538230248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 959948323742381290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15985b5322375ee4bada63f706c3f03b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeToWait3: 3
 --- !u!54 &1965140982490231996
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -160,3 +147,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6135045859042115984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959948323742381290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b11676a41840514a9741cc7e8bee17f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeToWait6: 6

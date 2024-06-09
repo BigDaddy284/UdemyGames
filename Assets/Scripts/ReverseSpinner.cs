@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ReverseSpinner : MonoBehaviour
+{
+    [SerializeField] float xValue = -0.5f;
+    [SerializeField] float yValue = 0;
+    [SerializeField] float zValue = 0;
+      // Update is called once per frame
+    void Update()
+    {
+        transform.Rotate (xValue, yValue, zValue);
+    }
+}
