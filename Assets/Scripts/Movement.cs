@@ -8,11 +8,14 @@ public class Movement : MonoBehaviour
     [SerializeField] float mainThrust = 5f;
     [SerializeField] float rotationThrust = 50f;
     Rigidbody rb;
+    AudioSource boost;
     
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        boost = GetComponent<AudioSource>();
+        boost.enabled = false;
     }
 
     // Update is called once per frame
@@ -27,6 +30,11 @@ public class Movement : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             rb.AddRelativeForce(Vector3.up * mainThrust);
+            boost.enabled = true;
+        }
+        else
+        {
+         boost.enabled = false;
         }
     }
 
