@@ -1,7 +1,5 @@
 using UnityEngine.SceneManagement;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEditor.PackageManager;
 using System;
 
 public class CollisionHandler : MonoBehaviour
@@ -16,20 +14,28 @@ public class CollisionHandler : MonoBehaviour
     ParticleSystem ps;
 
     bool isTransitioning = false;
+    bool collisionDisabled = false;
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();                  
     }
+
+    void Update()
+    {       
+        CollisionSwtich();        
+        SkipLevel();
+                
+    }
     
     void OnCollisionEnter(Collision other) 
     {
-        if (isTransitioning) {return;}
-        
+        if (isTransitioning || collisionDisabled) {return;}  // The '||' means 'or'
+
         switch (other.gameObject.tag) 
         {
             case "Friendly":
-                Debug.Log("Friendly");
+                
                 break;
             
             case "Finish":
@@ -77,5 +83,26 @@ public class CollisionHandler : MonoBehaviour
        }
        SceneManager.LoadScene(nextSceneIndex);            
     }
+    
+    void SkipLevel()
+    {         
+        if (Input.GetKey(KeyCode.L))
+        {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex +1;
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);       
+        }
+    }
 
+void CollisionSwtich()
+    {
+        if (Input.GetKey(KeyCode.C))
+        {
+            collisionDisabled = !collisionDisabled; //This will toggle the bool, but we need to tell the bool what it's controlling
+        }
+    }
 }

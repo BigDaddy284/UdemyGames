@@ -37,38 +37,58 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rb.AddRelativeForce(Vector3.up * mainThrust);
-            if(!audioSource.isPlaying)
-            {
-                audioSource.PlayOneShot(mainEngine);
-                boosterLF.Play();
-                boosterLR.Play();
-                boosterRF.Play();
-                boosterRR.Play();
-            }
-            
+            StartThrusting();
         }
-            else
-            {
-                audioSource.Stop();               
-            }
-            
+        else
+        {
+            StopThrusting();
+        }
     }
 
     void ProcessRotation()
-    {        
+    {
+        Rotation();
+    }
+
+    void Rotation()
+    {
         if (Input.GetKey(KeyCode.A))
-        {
-            ApplyRotation(rotationThrust);  
-            boosterLF.Stop();
-            boosterLR.Stop();          
-        }
+            RotateLeft();
+
         else if (Input.GetKey(KeyCode.D))
+            RotateRight();
+    }    
+    void StartThrusting()
+    {
+        rb.AddRelativeForce(Vector3.up * mainThrust);
+        if (!audioSource.isPlaying)
         {
-            ApplyRotation(-rotationThrust);
-            boosterRF.Stop();
-            boosterRR.Stop();           
+            audioSource.PlayOneShot(mainEngine);
+            boosterLF.Play();
+            boosterLR.Play();
+            boosterRF.Play();
+            boosterRR.Play();
         }
+    }
+
+
+    void StopThrusting()
+    {
+        audioSource.Stop();
+    }
+
+    void RotateLeft()
+    {
+        ApplyRotation(rotationThrust);
+        boosterLF.Stop();
+        boosterLR.Stop();
+    }
+
+    void RotateRight()
+    {
+        ApplyRotation(-rotationThrust);
+        boosterRF.Stop();
+        boosterRR.Stop();
     }
 
     void ApplyRotation(float rotationThisFrame)
@@ -77,4 +97,5 @@ public class Movement : MonoBehaviour
         transform.Rotate(Vector3.forward * rotationThisFrame * Time.deltaTime);
         rb.freezeRotation = false; // unfreezing rotation so the physics system can take over
     }
+
 }
