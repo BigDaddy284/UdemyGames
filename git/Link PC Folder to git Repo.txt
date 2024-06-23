@@ -1,0 +1,35 @@
+Create New Repo in git
+
+Create Folder for Game on PC
+
+Add git.ignore file to New Game Folder
+
+Open New Game Folder in VS Code
+
+Open Terminal in VS code and enter the following code, 1 by 1
+	
+Initialize the local folder as a Git repository:
+	git init
+
+Add the remote repository URL
+	git remote add origin https://github.com/yourusername/yourrepository.git
+
+Fetch the remote repository data:
+	git fetch origin
+
+List all branches (optional, to verify the branch name):
+	git branch -r
+
+Check out the desired branch and set it to track the remote branch. Replace your-branch-name with the actual branch name you want to link to:
+	git checkout -b your-branch-name origin/your-branch-name
+
+Add all files to staging
+	git add .
+
+Commit your changes:
+	git commit -m "Initial commit"
+
+Push your changes to the remote branch:
+	git push -u origin your-branch-name
+
+
