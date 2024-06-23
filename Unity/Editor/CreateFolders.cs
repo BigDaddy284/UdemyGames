@@ -4,7 +4,7 @@ using System.IO;
 
 public class CreateFolders : EditorWindow
 {
-    private string[] folders = { "Assets/Audio", "Assets/Prefabs", "Assets/Materials", "Assets/Scenes", "Assets/VFX" };
+    private string[] folders = { "Assets/Scripts","Assets/Audio", "Assets/Prefabs", "Assets/Materials", "Assets/Scenes", "Assets/VFX" };
 
     [MenuItem("Tools/Create Folders")]
     private static void ShowWindow()
