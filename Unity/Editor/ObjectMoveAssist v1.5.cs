@@ -39,7 +39,7 @@ public class ObjectMoveAssist : EditorWindow
     private void OnGUI()
     {
         // Section for rounding settings with a tooltip
-        GUILayout.Label(new GUIContent("Round Position and Scale Settings", "Settings to enable/disable and configure position and scale rounding"), EditorStyles.boldLabel);
+        GUILayout.Label(new GUIContent("Position and Scale Rounding", "Settings to enable/disable and configure position and scale rounding"), EditorStyles.boldLabel);
 
         // Button to toggle rounding on or off for both position and scale
         if (GUILayout.Button(new GUIContent(
@@ -58,7 +58,7 @@ public class ObjectMoveAssist : EditorWindow
         GUILayout.Space(10);
 
         // Section for axis lock settings with a tooltip
-        GUILayout.Label(new GUIContent("Axis Lock Settings", "Settings to lock movement on specific axes"), EditorStyles.boldLabel);
+        GUILayout.Label(new GUIContent("Axis Locks", "Settings to lock movement on specific axes"), EditorStyles.boldLabel);
 
         // Buttons to lock/unlock each axis
         if (GUILayout.Button(new GUIContent(
