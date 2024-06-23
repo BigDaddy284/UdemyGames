@@ -1,6 +1,6 @@
 // Unity tool to make moving/aligning objects easier (like your're on a grid)
 // Rotation Snap button to remove the need to hold CTRL
-// v1.5 working on multi object slection as I work towards v2.0 
+// v1.8 unstable, working on scale axis locking for v2.0 
 
 using UnityEngine;
 using UnityEditor;
