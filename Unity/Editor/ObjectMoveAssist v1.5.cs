@@ -71,7 +71,7 @@ public class ObjectMoveAssist : EditorWindow
         // Section for axis lock settings with a tooltip
         GUILayout.Label(new GUIContent("Axis Locks", "Settings to lock movement on specific axes"), EditorStyles.boldLabel);
 
-        // Add 5 pixels of space between the buttons
+        // Add 2 pixels of space between the buttons
         GUILayout.Space(2);
         
         // Buttons to lock/unlock each axis
@@ -82,7 +82,7 @@ public class ObjectMoveAssist : EditorWindow
             ToggleAxisLock("X");
         }
         
-        // Add 5 pixels of space between the buttons
+        // Add 2 pixels of space between the buttons
         GUILayout.Space(2);
 
         if (GUILayout.Button(new GUIContent(
@@ -92,7 +92,7 @@ public class ObjectMoveAssist : EditorWindow
             ToggleAxisLock("Y");
         }
 
-        // Add 5 pixels of space between the buttons
+        // Add 2 pixels of space between the buttons
         GUILayout.Space(2);
 
         if (GUILayout.Button(new GUIContent(
@@ -102,7 +102,7 @@ public class ObjectMoveAssist : EditorWindow
             ToggleAxisLock("Z");
         }
 
-        // Add 5 pixels of space between the buttons
+        // Add 20 pixels of space between the buttons
         GUILayout.Space(20);
 
         // Button to reset position to initial locked position

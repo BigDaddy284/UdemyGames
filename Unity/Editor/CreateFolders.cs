@@ -1,33 +1,57 @@
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 using System.IO;
 
 public class CreateFolders : EditorWindow
 {
-    private string[] folders = { "Assets/Scripts","Assets/Audio", "Assets/Prefabs", "Assets/Materials", "Assets/Scenes", "Assets/VFX" };
+    string[] folders = { "Assets/Audio", "Assets/Materials", "Assets/Prefabs", "Assets/Scripts", "Assets/VFX" };
 
     [MenuItem("Tools/Create Folders")]
-    private static void ShowWindow()
+    static void ShowWindow()
     {
         GetWindow<CreateFolders>("Create Folders");
     }
 
-    private void OnGUI()
+    void OnGUI()
     {
-        GUILayout.Label("Select folders to create:");
+        // Add 10 pixels of space between the buttons
+        GUILayout.Space(10);
+
+        GUILayout.Label(("Create Folder:"), EditorStyles.boldLabel);
 
         foreach (string folder in folders)
         {
             if (GUILayout.Button(folder))
             {
-                if (!Directory.Exists(folder))
-                {
-                    Directory.CreateDirectory(folder);
-                    Debug.Log("Created folder: " + folder);
-                }
+                CreateFolderIfNotExists(folder);
             }
+        }
+        
+        // Add 20 pixels of space between the buttons
+        GUILayout.Space(20);
+
+        if (GUILayout.Button("Create All Folders"))
+        {
+            CreateAllFolders();
         }
 
         AssetDatabase.Refresh();
+    }
+
+    void CreateFolderIfNotExists(string folder)
+    {
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+            Debug.Log("Created folder: " + folder);
+        }
+    }
+
+    void CreateAllFolders()
+    {
+        foreach (string folder in folders)
+        {
+            CreateFolderIfNotExists(folder);
+        }
     }
 }

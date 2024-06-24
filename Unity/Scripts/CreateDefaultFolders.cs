@@ -7,7 +7,7 @@ public class CreateDefaultFolders : Editor
     [MenuItem("Tools/Create Default Folders")]
     private static void CreateFolders()
     {
-        string[] folders = { "Assets/Audio", "Assets/Prefabs", "Assets/Materials", "Assets/Scenes", "Assets/VFX" };
+        string[] folders = { "Assets/Audio", "Assets/Materials", "Assets/Prefabs", "Assets/Scripts", "Assets/VFX" };
 
         foreach (string folder in folders)
         {
