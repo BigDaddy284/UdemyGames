@@ -31,10 +31,10 @@ public class ObjectMoveAssist : EditorWindow
     private Dictionary<Transform, Vector3> initialLockedPositions = new Dictionary<Transform, Vector3>();
 
     // Menu item to show the window in the Unity Editor
-    [MenuItem("Window/Object Move Assist")]
+    [MenuItem("Window/Object Move Tool")]
     public static void ShowWindow()
     {
-        GetWindow<ObjectMoveAssist>("Object Move Assist");
+        GetWindow<ObjectMoveAssist>("Object Move Tool");
     }
 
     void OnGUI()
