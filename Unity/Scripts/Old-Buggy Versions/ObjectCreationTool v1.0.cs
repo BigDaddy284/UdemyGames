@@ -36,6 +36,15 @@ public class ObjectCreationTool : EditorWindow
         LoadPrefabs();
         LoadAudioPrefabs();
         LoadVFXPrefabs();
+        
+        EditorApplication.projectChanged += OnProjectChange;
+        AssemblyReloadEvents.afterAssemblyReload += OnAssemblyReload;
+    }
+
+    void OnDisable()
+    {
+        EditorApplication.projectChanged -= OnProjectChange;
+        AssemblyReloadEvents.afterAssemblyReload -= OnAssemblyReload;
     }
 
     void OnGUI()
@@ -303,6 +312,18 @@ public class ObjectCreationTool : EditorWindow
         }
     }
 
+    void OnProjectChange()
+    {
+        LoadAllAssets();
+        Repaint();
+    }
+
+    void OnAssemblyReload()
+    {
+        LoadAllAssets();
+        Repaint();
+    }
+
     void CreatePrimitiveAt(Vector3 coordinates)
     {
         GameObject newObject = GameObject.CreatePrimitive(selectedPrimitiveType);
@@ -381,16 +402,7 @@ public class ObjectCreationTool : EditorWindow
 
     void LoadPrefabs()
     {
-        string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs" });
-        prefabs.Clear();
-        prefabNames = new string[prefabGuids.Length];
-        for (int i = 0; i < prefabGuids.Length; i++)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(prefabGuids[i]);
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            prefabs.Add(prefab);
-            prefabNames[i] = prefab.name;
-        }
+        LoadAssets("t:Prefab", "Assets/Prefabs", ref prefabs, ref prefabNames);
     }
 
     void LoadAudioPrefabs()
@@ -411,16 +423,28 @@ public class ObjectCreationTool : EditorWindow
 
     void LoadVFXPrefabs()
     {
-        string[] vfxPrefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/VFX" });
-        vfxPrefabs.Clear();
-        vfxPrefabNames = new string[vfxPrefabGuids.Length];
-        for (int i = 0; i < vfxPrefabGuids.Length; i++)
+        LoadAssets("t:Prefab", "Assets/VFX", ref vfxPrefabs, ref vfxPrefabNames);
+    }
+
+    void LoadAssets(string filter, string folder, ref List<GameObject> list, ref string[] names)
+    {
+        string[] guids = AssetDatabase.FindAssets(filter, new[] { folder });
+        list.Clear();
+        names = new string[guids.Length];
+        for (int i = 0; i < guids.Length; i++)
         {
-            string path = AssetDatabase.GUIDToAssetPath(vfxPrefabGuids[i]);
-            GameObject vfxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            vfxPrefabs.Add(vfxPrefab);
-            vfxPrefabNames[i] = vfxPrefab.name;
+            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+            GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            list.Add(asset);
+            names[i] = asset.name;
         }
+    }
+
+    void LoadAllAssets()
+    {
+        LoadPrefabs();
+        LoadAudioPrefabs();
+        LoadVFXPrefabs();
     }
 
     void CreateCSharpScript()

@@ -1,6 +1,5 @@
-// Unity tool to make moving/aligning objects easier (like your're on a grid)
-// Rotation Snap button to remove the need to hold CTRL
-// v1.5
+// Unity tool to make moving/aligning objects easier (snap-to-grid)
+// v1.6
 
     //BUGS
         //If an axis lock is enabled before selecting an object, it has no affect. unlock and relock axis while object is slected.
@@ -9,11 +8,10 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using System.Linq; // Add this namespace for LINQ queries
+using System.Linq;
 
 public class ObjectMoveTool : EditorWindow
 {
-    
     // State variables for rounding and axis locking
     private bool isRoundingEnabled = true;
     private bool lockXAxis = false;
@@ -30,24 +28,27 @@ public class ObjectMoveTool : EditorWindow
     // Dictionary to store initial locked axis positions
     private Dictionary<Transform, Vector3> initialLockedPositions = new Dictionary<Transform, Vector3>();
 
+    // Dictionary to store last frame positions
+    private Dictionary<Transform, Vector3> lastFramePositions = new Dictionary<Transform, Vector3>();
+
     // Menu item to show the window in the Unity Editor
     [MenuItem("Window/Object Move Tool")]
     public static void ShowWindow()
     {
-        GetWindow<ObjectMoveAssist>("Object Move Tool");
+        GetWindow<ObjectMoveTool>("Object Move Tool");
     }
 
     void OnGUI()
     {
         // Add 5 pixels of space between the buttons
         GUILayout.Space(5);
-        
+
         // Section for rounding settings with a tooltip
         GUILayout.Label(new GUIContent("Position and Scale Rounding", "Settings to enable/disable and configure position and scale rounding"), EditorStyles.boldLabel);
 
         // Add 5 pixels of space between the buttons
         GUILayout.Space(5);
-        
+
         // Button to toggle rounding on or off for both position and scale
         if (GUILayout.Button(new GUIContent(
             isRoundingEnabled ? "Disable Rounding" : "Enable Rounding",
@@ -59,7 +60,7 @@ public class ObjectMoveTool : EditorWindow
 
         // Add 5 pixels of space between the buttons
         GUILayout.Space(5);
-        
+
         // Heading and dropdown to select rounding precision
         GUILayout.Label(new GUIContent("Rounding Precision", "Select the precision for rounding"), EditorStyles.boldLabel);
         selectedRoundingOption = EditorGUILayout.Popup(selectedRoundingOption, roundingOptions);
@@ -73,7 +74,7 @@ public class ObjectMoveTool : EditorWindow
 
         // Add 2 pixels of space between the buttons
         GUILayout.Space(2);
-        
+
         // Buttons to lock/unlock each axis
         if (GUILayout.Button(new GUIContent(
             lockXAxis ? "Unlock X Axis" : "Lock X Axis",
@@ -81,7 +82,7 @@ public class ObjectMoveTool : EditorWindow
         {
             ToggleAxisLock("X");
         }
-        
+
         // Add 2 pixels of space between the buttons
         GUILayout.Space(2);
 
@@ -139,7 +140,7 @@ public class ObjectMoveTool : EditorWindow
     // Update method called every frame
     void Update()
     {
-        // Update positions and apply rounding if object is selected
+        // Update positions and apply rounding if object is being moved
         foreach (var transform in Selection.transforms)
         {
             Vector3 position = transform.position;
@@ -151,33 +152,46 @@ public class ObjectMoveTool : EditorWindow
                 initialPositions[transform] = position;
             }
 
-            // Apply rounding if enabled
-            if (isRoundingEnabled)
+            // Store last frame position
+            if (!lastFramePositions.ContainsKey(transform))
             {
-                position = new Vector3(
-                    RoundToPrecision(position.x, GetRoundingPrecision()),
-                    RoundToPrecision(position.y, GetRoundingPrecision()),
-                    RoundToPrecision(position.z, GetRoundingPrecision())
-                );
-
-                scale = new Vector3(
-                    RoundToPrecision(scale.x, GetRoundingPrecision()),
-                    RoundToPrecision(scale.y, GetRoundingPrecision()),
-                    RoundToPrecision(scale.z, GetRoundingPrecision())
-                );
+                lastFramePositions[transform] = position;
             }
 
-            // Apply axis locks
-            if (lockXAxis)
-                position.x = GetInitialLockedPosition(transform, "X").x;
-            if (lockYAxis)
-                position.y = GetInitialLockedPosition(transform, "Y").y;
-            if (lockZAxis)
-                position.z = GetInitialLockedPosition(transform, "Z").z;
+            // Check if the object is being moved
+            if (position != lastFramePositions[transform])
+            {
+                // Apply rounding if enabled
+                if (isRoundingEnabled)
+                {
+                    position = new Vector3(
+                        RoundToPrecision(position.x, GetRoundingPrecision()),
+                        RoundToPrecision(position.y, GetRoundingPrecision()),
+                        RoundToPrecision(position.z, GetRoundingPrecision())
+                    );
 
-            // Update the position and scale of the selected transform
-            transform.position = position;
-            transform.localScale = scale;
+                    scale = new Vector3(
+                        RoundToPrecision(scale.x, GetRoundingPrecision()),
+                        RoundToPrecision(scale.y, GetRoundingPrecision()),
+                        RoundToPrecision(scale.z, GetRoundingPrecision())
+                    );
+                }
+
+                // Apply axis locks
+                if (lockXAxis)
+                    position.x = GetInitialLockedPosition(transform, "X").x;
+                if (lockYAxis)
+                    position.y = GetInitialLockedPosition(transform, "Y").y;
+                if (lockZAxis)
+                    position.z = GetInitialLockedPosition(transform, "Z").z;
+
+                // Update the position and scale of the selected transform
+                transform.position = position;
+                transform.localScale = scale;
+            }
+
+            // Update last frame position
+            lastFramePositions[transform] = position;
         }
 
         // Clear initial positions for deselected objects
@@ -187,6 +201,7 @@ public class ObjectMoveTool : EditorWindow
             {
                 initialPositions.Remove(transform);
                 initialLockedPositions.Remove(transform); // Remove locked axis info when deselecting
+                lastFramePositions.Remove(transform);
             }
         }
     }
