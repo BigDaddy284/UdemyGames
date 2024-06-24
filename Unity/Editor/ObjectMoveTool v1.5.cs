@@ -11,7 +11,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq; // Add this namespace for LINQ queries
 
-public class ObjectMoveAssist : EditorWindow
+public class ObjectMoveTool : EditorWindow
 {
     
     // State variables for rounding and axis locking
