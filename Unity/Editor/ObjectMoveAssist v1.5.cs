@@ -1,6 +1,6 @@
 // Unity tool to make moving/aligning objects easier (like your're on a grid)
 // Rotation Snap button to remove the need to hold CTRL
-// v1.5 working on multi object slection as I work towards v2.0 
+// v1.5
 
     //BUGS
         //If an axis lock is enabled before selecting an object, it has no affect. unlock and relock axis while object is slected.
@@ -13,6 +13,7 @@ using System.Linq; // Add this namespace for LINQ queries
 
 public class ObjectMoveAssist : EditorWindow
 {
+    
     // State variables for rounding and axis locking
     private bool isRoundingEnabled = true;
     private bool lockXAxis = false;
@@ -36,11 +37,17 @@ public class ObjectMoveAssist : EditorWindow
         GetWindow<ObjectMoveAssist>("Object Move Assist");
     }
 
-    private void OnGUI()
+    void OnGUI()
     {
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(5);
+        
         // Section for rounding settings with a tooltip
         GUILayout.Label(new GUIContent("Position and Scale Rounding", "Settings to enable/disable and configure position and scale rounding"), EditorStyles.boldLabel);
 
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(5);
+        
         // Button to toggle rounding on or off for both position and scale
         if (GUILayout.Button(new GUIContent(
             isRoundingEnabled ? "Disable Rounding" : "Enable Rounding",
@@ -50,16 +57,23 @@ public class ObjectMoveAssist : EditorWindow
             EditorPrefs.SetBool("IsRoundingEnabled", isRoundingEnabled);
         }
 
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(5);
+        
         // Heading and dropdown to select rounding precision
         GUILayout.Label(new GUIContent("Rounding Precision", "Select the precision for rounding"), EditorStyles.boldLabel);
         selectedRoundingOption = EditorGUILayout.Popup(selectedRoundingOption, roundingOptions);
         EditorPrefs.SetInt("SelectedRoundingOption", selectedRoundingOption);
 
-        GUILayout.Space(10);
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(5);
 
         // Section for axis lock settings with a tooltip
         GUILayout.Label(new GUIContent("Axis Locks", "Settings to lock movement on specific axes"), EditorStyles.boldLabel);
 
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(2);
+        
         // Buttons to lock/unlock each axis
         if (GUILayout.Button(new GUIContent(
             lockXAxis ? "Unlock X Axis" : "Lock X Axis",
@@ -67,6 +81,9 @@ public class ObjectMoveAssist : EditorWindow
         {
             ToggleAxisLock("X");
         }
+        
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(2);
 
         if (GUILayout.Button(new GUIContent(
             lockYAxis ? "Unlock Y Axis" : "Lock Y Axis",
@@ -75,6 +92,9 @@ public class ObjectMoveAssist : EditorWindow
             ToggleAxisLock("Y");
         }
 
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(2);
+
         if (GUILayout.Button(new GUIContent(
             lockZAxis ? "Unlock Z Axis" : "Lock Z Axis",
             "Toggle locking movement on the Z axis")))
@@ -82,7 +102,8 @@ public class ObjectMoveAssist : EditorWindow
             ToggleAxisLock("Z");
         }
 
-        GUILayout.Space(10);
+        // Add 5 pixels of space between the buttons
+        GUILayout.Space(20);
 
         // Button to reset position to initial locked position
         if (GUILayout.Button(new GUIContent(
@@ -95,14 +116,14 @@ public class ObjectMoveAssist : EditorWindow
 
     // Menu item to toggle position and scaling rounding with a keyboard shortcut
     [MenuItem("Tools/Toggle Position and Scaling Rounding %#r")]
-    private static void TogglePositionAndScalingRounding()
+    static void TogglePositionAndScalingRounding()
     {
         bool isRoundingEnabled = EditorPrefs.GetBool("IsRoundingEnabled", true);
         EditorPrefs.SetBool("IsRoundingEnabled", !isRoundingEnabled);
     }
 
     // Register update method when the window is enabled
-    private void OnEnable()
+    void OnEnable()
     {
         isRoundingEnabled = EditorPrefs.GetBool("IsRoundingEnabled", true);
         selectedRoundingOption = EditorPrefs.GetInt("SelectedRoundingOption", 0);
@@ -110,13 +131,13 @@ public class ObjectMoveAssist : EditorWindow
     }
 
     // Unregister update method when the window is disabled
-    private void OnDisable()
+    void OnDisable()
     {
         EditorApplication.update -= Update;
     }
 
     // Update method called every frame
-    private void Update()
+    void Update()
     {
         // Update positions and apply rounding if object is selected
         foreach (var transform in Selection.transforms)
@@ -171,13 +192,13 @@ public class ObjectMoveAssist : EditorWindow
     }
 
     // Method to round a value to the specified precision
-    private float RoundToPrecision(float value, float precision)
+    float RoundToPrecision(float value, float precision)
     {
         return Mathf.Round(value / precision) * precision;
     }
 
     // Method to get the rounding precision based on the selected option
-    private float GetRoundingPrecision()
+    float GetRoundingPrecision()
     {
         switch (selectedRoundingOption)
         {
@@ -193,7 +214,7 @@ public class ObjectMoveAssist : EditorWindow
     }
 
     // Method to toggle axis lock for X, Y, or Z axis
-    private void ToggleAxisLock(string axis)
+    void ToggleAxisLock(string axis)
     {
         switch (axis)
         {
@@ -213,7 +234,7 @@ public class ObjectMoveAssist : EditorWindow
     }
 
     // Method to update initial locked position based on current position
-    private void UpdateInitialLockedPosition(string axis)
+    void UpdateInitialLockedPosition(string axis)
     {
         foreach (var transform in Selection.transforms)
         {
@@ -233,7 +254,7 @@ public class ObjectMoveAssist : EditorWindow
     }
 
     // Method to get the initial locked position based on axis
-    private Vector3 GetInitialLockedPosition(Transform transform, string axis)
+    Vector3 GetInitialLockedPosition(Transform transform, string axis)
     {
         if (initialLockedPositions.ContainsKey(transform))
         {
@@ -256,7 +277,7 @@ public class ObjectMoveAssist : EditorWindow
     }
 
     // Method to reset position to initial locked position for selected objects
-    private void ResetPosition()
+    void ResetPosition()
     {
         foreach (var transform in Selection.transforms.ToList())
         {
