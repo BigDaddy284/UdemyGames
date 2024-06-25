@@ -17,11 +17,11 @@ public class ObjectCreationTool : EditorWindow
     int selectedAudioIndex = 0;
 
     List<GameObject> prefabs = new List<GameObject>();
-    List<GameObject> audioPrefabs = new List<GameObject>();
+    List<string> audioClipPaths = new List<string>();
     List<string> objFiles = new List<string>();
 
     string[] prefabNames;
-    string[] audioPrefabNames;
+    string[] audioClipNames;
     string[] objFileNames;    
 
     // Menu item to show the window
@@ -35,7 +35,7 @@ public class ObjectCreationTool : EditorWindow
     void OnEnable()
     {
         LoadPrefabs();
-        LoadAudioPrefabs();
+        LoadAudioClipNames();
         LoadOBJFiles();
 
         // Subscribe to project change and assembly reload events
@@ -81,7 +81,7 @@ public class ObjectCreationTool : EditorWindow
         GUILayout.FlexibleSpace();
         GUILayout.Label("Selected Obj @", EditorStyles.boldLabel);
         GUILayout.FlexibleSpace();
-        GUILayout.Label("Create Obj Modifier", EditorStyles.boldLabel);
+        GUILayout.Label("Create Obj @", EditorStyles.boldLabel);
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
@@ -192,7 +192,7 @@ public class ObjectCreationTool : EditorWindow
         // Dropdown for audio files
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        selectedAudioIndex = EditorGUILayout.Popup("Audio Files", selectedAudioIndex, audioPrefabNames, GUILayout.Width(200));
+        selectedAudioIndex = EditorGUILayout.Popup("Audio Files", selectedAudioIndex, audioClipNames, GUILayout.Width(200));
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
@@ -255,7 +255,7 @@ public class ObjectCreationTool : EditorWindow
     void OnProjectChange()
     {
         LoadPrefabs();
-        LoadAudioPrefabs();
+        LoadAudioClipNames();
         LoadOBJFiles();
     }
 
@@ -279,25 +279,17 @@ public class ObjectCreationTool : EditorWindow
         prefabNames = prefabs.Select(p => p.name).ToArray();
     }
 
-    // Load all .ogg audio files from the "Assets/Audio" folder
-    void LoadAudioPrefabs()
+    // Load all .ogg audio file names from the "Assets/Audio" folder
+    void LoadAudioClipNames()
     {
-        audioPrefabs.Clear();
-        var audioPrefabGuids = AssetDatabase.FindAssets("t:AudioClip", new[] { "Assets/Audio" });
-        foreach (var guid in audioPrefabGuids)
+        audioClipPaths.Clear();
+        var audioClipGuids = AssetDatabase.FindAssets("t:AudioClip", new[] { "Assets/Audio" });
+        foreach (var guid in audioClipGuids)
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
-            var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-
-            // Create a new GameObject to hold the AudioSource
-            var audioSourcePrefab = new GameObject(audioClip.name);
-            var audioSource = audioSourcePrefab.AddComponent<AudioSource>();
-            audioSource.clip = audioClip;
-
-            // Save the GameObject as a prefab
-            audioPrefabs.Add(audioSourcePrefab);
+            audioClipPaths.Add(path);
         }
-        audioPrefabNames = audioPrefabs.Select(p => p.name).ToArray();
+        audioClipNames = audioClipPaths.Select(p => Path.GetFileNameWithoutExtension(p)).ToArray();
     }
 
     // Load all .obj files from the "Assets/Prefabs" folder
@@ -332,10 +324,17 @@ public class ObjectCreationTool : EditorWindow
     // Create an audio source at the specified position
     void CreateAudioSourceAt(Vector3 position)
     {
-        var audioPrefab = audioPrefabs[selectedAudioIndex];
-        var instance = (GameObject)PrefabUtility.InstantiatePrefab(audioPrefab);
-        instance.transform.position = position;
-        Undo.RegisterCreatedObjectUndo(instance, "Audio Source");
+        var audioClipPath = audioClipPaths[selectedAudioIndex];
+        var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(audioClipPath);
+
+        // Create a new GameObject to hold the AudioSource
+        var audioSourcePrefab = new GameObject(audioClip.name);
+        var audioSource = audioSourcePrefab.AddComponent<AudioSource>();
+        audioSource.clip = audioClip;
+
+        // Place the GameObject in the scene
+        audioSourcePrefab.transform.position = position;
+        Undo.RegisterCreatedObjectUndo(audioSourcePrefab, "Audio Source");
     }
 
     // Create a reverb zone at the specified position
