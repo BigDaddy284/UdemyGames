@@ -1,10 +1,3 @@
-// Unity tool to make moving/aligning objects easier (snap-to-grid)
-// v1.6
-
-    //BUGS
-        //If an axis lock is enabled before selecting an object, it has no affect. unlock and relock axis while object is slected.
-        //Same issue as above for multipole object selection. Select all objects first, then enable the axis lock
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
