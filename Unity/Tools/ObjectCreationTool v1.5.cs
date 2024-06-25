@@ -15,49 +15,50 @@ public class ObjectCreationTool : EditorWindow
     PrimitiveType selectedPrimitiveType = PrimitiveType.Cube;
     int selectedPrefabIndex = 0;
     int selectedAudioIndex = 0;
-    int selectedVFXIndex = 0;
-    int selectedEffectIndex = 0;
-    
+
     List<GameObject> prefabs = new List<GameObject>();
     List<GameObject> audioPrefabs = new List<GameObject>();
-    List<GameObject> vfxPrefabs = new List<GameObject>();
     List<string> objFiles = new List<string>();
 
     string[] prefabNames;
     string[] audioPrefabNames;
-    string[] vfxPrefabNames;
-    string[] objFileNames;
-    string[] effectNames = { "Particle System", "Trail Renderer", "Line Renderer" };
+    string[] objFileNames;    
 
+    // Menu item to show the window
     [MenuItem("Tools/Object Creation Tool")]
     public static void ShowWindow()
     {
         GetWindow<ObjectCreationTool>("Object Creation Tool");
     }
 
+    // Called when the window is enabled
     void OnEnable()
     {
         LoadPrefabs();
         LoadAudioPrefabs();
-        LoadVFXPrefabs();
         LoadOBJFiles();
 
+        // Subscribe to project change and assembly reload events
         EditorApplication.projectChanged += OnProjectChange;
         AssemblyReloadEvents.afterAssemblyReload += OnAssemblyReload;
         EditorApplication.update += Update;
     }
 
+    // Called when the window is disabled
     void OnDisable()
     {
+        // Unsubscribe from events
         EditorApplication.projectChanged -= OnProjectChange;
         AssemblyReloadEvents.afterAssemblyReload -= OnAssemblyReload;
         EditorApplication.update -= Update;
     }
 
+    // Main GUI for the tool
     void OnGUI()
     {
         GUILayout.Space(5);
 
+        // Enable/Disable button
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button((isEnabled ? "Disable" : "Enable"), GUILayout.Width(150)))
@@ -75,6 +76,7 @@ public class ObjectCreationTool : EditorWindow
 
         GUILayout.Space(5);
 
+        // Display current selection coordinates and adjustment values
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         GUILayout.Label("Selected Obj @", EditorStyles.boldLabel);
@@ -107,6 +109,7 @@ public class ObjectCreationTool : EditorWindow
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
+        // Adjustment buttons for X, Y, Z coordinates
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("X -", GUILayout.Width(50)))
@@ -148,12 +151,14 @@ public class ObjectCreationTool : EditorWindow
 
         GUILayout.Space(5);
 
+        // Dropdown for primitive types
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         selectedPrimitiveType = (PrimitiveType)EditorGUILayout.EnumPopup("Primitive Objects", selectedPrimitiveType, GUILayout.Width(200));
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
+        // Button to create selected primitive
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Create Primitive", GUILayout.Width(150)))
@@ -165,12 +170,14 @@ public class ObjectCreationTool : EditorWindow
 
         GUILayout.Space(5);
 
+        // Dropdown for prefabs
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         selectedPrefabIndex = EditorGUILayout.Popup("Prefabs", selectedPrefabIndex, prefabNames, GUILayout.Width(200));
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
+        // Button to create selected prefab
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Create Prefab", GUILayout.Width(150)))
@@ -182,12 +189,14 @@ public class ObjectCreationTool : EditorWindow
 
         GUILayout.Space(5);
 
+        // Dropdown for audio files
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         selectedAudioIndex = EditorGUILayout.Popup("Audio Files", selectedAudioIndex, audioPrefabNames, GUILayout.Width(200));
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
+        // Buttons to create audio source or reverb zone
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Audio Source", GUILayout.Width(85)))
@@ -201,31 +210,9 @@ public class ObjectCreationTool : EditorWindow
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
-        GUILayout.Space(5);
+        GUILayout.Space(5);       
 
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        selectedVFXIndex = EditorGUILayout.Popup("VFX Files", selectedVFXIndex, vfxPrefabNames, GUILayout.Width(200));
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        selectedEffectIndex = EditorGUILayout.Popup("Effects", selectedEffectIndex, effectNames, GUILayout.Width(200));
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Create VFX", GUILayout.Width(150)))
-        {
-            CreateVFXAt(lastSelectedObjectCoordinates + adjustmentValues);
-        }
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-
-        GUILayout.Space(5);
-
+        // Button to focus scene view
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Focus Scene View", GUILayout.Width(150)))
@@ -236,6 +223,7 @@ public class ObjectCreationTool : EditorWindow
         GUILayout.EndHorizontal();
     }
 
+    // Called when selection changes
     void OnSelectionChange()
     {
         if (!isEnabled || Selection.activeTransform == null)
@@ -253,6 +241,7 @@ public class ObjectCreationTool : EditorWindow
         Repaint();
     }
 
+    // Called every frame to update the window
     void Update()
     {
         if (lastSelectedObject != null)
@@ -262,19 +251,21 @@ public class ObjectCreationTool : EditorWindow
         }
     }
 
+    // Called when project changes
     void OnProjectChange()
     {
         LoadPrefabs();
         LoadAudioPrefabs();
-        LoadVFXPrefabs();
         LoadOBJFiles();
     }
 
+    // Called after assembly reload
     void OnAssemblyReload()
     {
         OnProjectChange();
     }
 
+    // Load all prefabs from the "Assets/Prefabs" folder
     void LoadPrefabs()
     {
         prefabs.Clear();
@@ -288,32 +279,28 @@ public class ObjectCreationTool : EditorWindow
         prefabNames = prefabs.Select(p => p.name).ToArray();
     }
 
+    // Load all .ogg audio files from the "Assets/Audio" folder
     void LoadAudioPrefabs()
     {
         audioPrefabs.Clear();
-        var audioPrefabGuids = AssetDatabase.FindAssets("t:GameObject", new[] { "Assets/Audio" });
+        var audioPrefabGuids = AssetDatabase.FindAssets("t:AudioClip", new[] { "Assets/Audio" });
         foreach (var guid in audioPrefabGuids)
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
-            var audioPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            audioPrefabs.Add(audioPrefab);
+            var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+
+            // Create a new GameObject to hold the AudioSource
+            var audioSourcePrefab = new GameObject(audioClip.name);
+            var audioSource = audioSourcePrefab.AddComponent<AudioSource>();
+            audioSource.clip = audioClip;
+
+            // Save the GameObject as a prefab
+            audioPrefabs.Add(audioSourcePrefab);
         }
         audioPrefabNames = audioPrefabs.Select(p => p.name).ToArray();
     }
 
-    void LoadVFXPrefabs()
-    {
-        vfxPrefabs.Clear();
-        var vfxPrefabGuids = AssetDatabase.FindAssets("t:GameObject", new[] { "Assets/VFX" });
-        foreach (var guid in vfxPrefabGuids)
-        {
-            var path = AssetDatabase.GUIDToAssetPath(guid);
-            var vfxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            vfxPrefabs.Add(vfxPrefab);
-        }
-        vfxPrefabNames = vfxPrefabs.Select(p => p.name).ToArray();
-    }
-
+    // Load all .obj files from the "Assets/Prefabs" folder
     void LoadOBJFiles()
     {
         objFiles.Clear();
@@ -325,6 +312,7 @@ public class ObjectCreationTool : EditorWindow
         objFileNames = objFiles.ToArray();
     }
 
+    // Create a primitive at the specified position
     void CreatePrimitiveAt(Vector3 position)
     {
         var primitive = GameObject.CreatePrimitive(selectedPrimitiveType);
@@ -332,6 +320,7 @@ public class ObjectCreationTool : EditorWindow
         Undo.RegisterCreatedObjectUndo(primitive, "Create Primitive");
     }
 
+    // Create a prefab at the specified position
     void CreatePrefabAt(Vector3 position)
     {
         var prefab = prefabs[selectedPrefabIndex];
@@ -340,6 +329,7 @@ public class ObjectCreationTool : EditorWindow
         Undo.RegisterCreatedObjectUndo(instance, "Create Prefab");
     }
 
+    // Create an audio source at the specified position
     void CreateAudioSourceAt(Vector3 position)
     {
         var audioPrefab = audioPrefabs[selectedAudioIndex];
@@ -348,6 +338,7 @@ public class ObjectCreationTool : EditorWindow
         Undo.RegisterCreatedObjectUndo(instance, "Audio Source");
     }
 
+    // Create a reverb zone at the specified position
     void CreateAudioReverbZoneAt(Vector3 position)
     {
         var reverbZone = new GameObject("Reverb Zone");
@@ -357,35 +348,7 @@ public class ObjectCreationTool : EditorWindow
         Undo.RegisterCreatedObjectUndo(reverbZone, "Reverb Zone");
     }
 
-    void CreateVFXAt(Vector3 position)
-    {
-        if (selectedEffectIndex == 0)
-        {
-            var vfxPrefab = vfxPrefabs[selectedVFXIndex];
-            var instance = (GameObject)PrefabUtility.InstantiatePrefab(vfxPrefab);
-            instance.transform.position = position;
-            Undo.RegisterCreatedObjectUndo(instance, "Create VFX");
-        }
-        else if (selectedEffectIndex == 1)
-        {
-            var trailObject = new GameObject("Trail Renderer");
-            var trailRenderer = trailObject.AddComponent<TrailRenderer>();
-            trailRenderer.time = 2.0f;
-            trailObject.transform.position = position;
-            Undo.RegisterCreatedObjectUndo(trailObject, "Create Trail Renderer");
-        }
-        else if (selectedEffectIndex == 2)
-        {
-            var lineObject = new GameObject("Line Renderer");
-            var lineRenderer = lineObject.AddComponent<LineRenderer>();
-            lineRenderer.positionCount = 2;
-            lineRenderer.SetPosition(0, position);
-            lineRenderer.SetPosition(1, position + Vector3.up * 5);
-            lineObject.transform.position = position;
-            Undo.RegisterCreatedObjectUndo(lineObject, "Create Line Renderer");
-        }
-    }
-
+    // Focus the scene view on the specified position
     void FocusSceneView()
     {
         if (SceneView.lastActiveSceneView != null)
