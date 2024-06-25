@@ -129,6 +129,13 @@ public class ObjectMoveTool : EditorWindow
         isRoundingEnabled = EditorPrefs.GetBool("IsRoundingEnabled", true);
         selectedRoundingOption = EditorPrefs.GetInt("SelectedRoundingOption", 0);
         EditorApplication.update += Update;
+
+#if UNITY_EDITOR
+        if (Application.isPlaying)
+        {
+            this.Close();
+        }
+#endif
     }
 
     // Unregister update method when the window is disabled
