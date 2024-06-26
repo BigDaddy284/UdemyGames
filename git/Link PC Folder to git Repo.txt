@@ -12,7 +12,7 @@ Initialize the local folder as a Git repository:
 	git init
 
 Add the remote repository URL
-	git remote add origin https://github.com/yourusername/yourrepository.git
+	git remote add origin https://github.com/BigDaddy284/yourrepository.git
 
 Fetch the remote repository data:
 	git fetch origin

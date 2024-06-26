@@ -7,6 +7,7 @@ using System.Linq;
 
 public class ObjectCreationTool : EditorWindow
 {
+    // State and data fields
     bool isEnabled = false;
     Vector3 lastSelectedObjectCoordinates = Vector3.zero;
     Vector3 adjustmentValues = Vector3.zero;
@@ -14,13 +15,16 @@ public class ObjectCreationTool : EditorWindow
 
     PrimitiveType selectedPrimitiveType = PrimitiveType.Cube;
     int selectedPrefabIndex = 0;
+    int selectedPrefab2DIndex = 0; // Index for Prefabs 2D selection
     int selectedAudioIndex = 0;
 
     List<GameObject> prefabs = new List<GameObject>();
+    List<Texture2D> prefabs2D = new List<Texture2D>(); // List for 2D prefabs
     List<string> audioClipPaths = new List<string>();
     List<string> objFiles = new List<string>();
 
     string[] prefabNames;
+    string[] prefab2DNames; // Names for 2D prefabs
     string[] audioClipNames;
     string[] objFileNames;    
 
@@ -34,7 +38,9 @@ public class ObjectCreationTool : EditorWindow
     // Called when the window is enabled
     void OnEnable()
     {
+        // Load data on enable
         LoadPrefabs();
+        LoadPrefabs2D(); // Load 2D prefabs
         LoadAudioClipNames();
         LoadOBJFiles();
 
@@ -189,6 +195,25 @@ public class ObjectCreationTool : EditorWindow
 
         GUILayout.Space(5);
 
+        // Dropdown for 2D prefabs
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        selectedPrefab2DIndex = EditorGUILayout.Popup("Prefabs 2D", selectedPrefab2DIndex, prefab2DNames, GUILayout.Width(200));
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        // Button to create selected 2D prefab
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Create Prefab 2D", GUILayout.Width(150)))
+        {
+            CreatePrefab2DAt(lastSelectedObjectCoordinates + adjustmentValues);
+        }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(5);
+
         // Dropdown for audio files
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
@@ -255,6 +280,7 @@ public class ObjectCreationTool : EditorWindow
     void OnProjectChange()
     {
         LoadPrefabs();
+        LoadPrefabs2D(); // Reload 2D prefabs on project change
         LoadAudioClipNames();
         LoadOBJFiles();
     }
@@ -277,6 +303,20 @@ public class ObjectCreationTool : EditorWindow
             prefabs.Add(prefab);
         }
         prefabNames = prefabs.Select(p => p.name).ToArray();
+    }
+
+    // Load all 2D prefabs (PNG files) from the "Assets/Prefabs" folder
+    void LoadPrefabs2D()
+    {
+        prefabs2D.Clear();
+        var prefab2DGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets/Prefabs" });
+        foreach (var guid in prefab2DGuids)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var prefab2D = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            prefabs2D.Add(prefab2D);
+        }
+        prefab2DNames = prefabs2D.Select(p => p.name).ToArray();
     }
 
     // Load all .ogg audio file names from the "Assets/Audio" folder
@@ -319,6 +359,17 @@ public class ObjectCreationTool : EditorWindow
         var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
         instance.transform.position = position;
         Undo.RegisterCreatedObjectUndo(instance, "Create Prefab");
+    }
+
+    // Create a 2D prefab at the specified position
+    void CreatePrefab2DAt(Vector3 position)
+    {
+        var prefab2D = prefabs2D[selectedPrefab2DIndex];
+        var instance = new GameObject(prefab2D.name);
+        var spriteRenderer = instance.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = Sprite.Create(prefab2D, new Rect(0.0f, 0.0f, prefab2D.width, prefab2D.height), new Vector2(0.5f, 0.5f), 100.0f);
+        instance.transform.position = position;
+        Undo.RegisterCreatedObjectUndo(instance, "Create Prefab 2D");
     }
 
     // Create an audio source at the specified position
