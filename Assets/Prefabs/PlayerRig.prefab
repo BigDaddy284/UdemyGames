@@ -187,6 +187,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardSpeed: 15
   rotationSpeed: 250
+  turnSkid: {fileID: 0}
+  accelerateSound: {fileID: 0}
 --- !u!50 &2933491116625831312
 Rigidbody2D:
   serializedVersion: 4
